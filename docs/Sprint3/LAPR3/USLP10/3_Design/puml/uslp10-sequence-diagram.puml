@@ -1,0 +1,228 @@
+@startuml
+
+title USLP10 - Sequence Diagram
+
+autonumber
+
+actor "Product Owner" as PO
+participant "IrrigationSystemUI" as UI
+participant "IrrigationSystemController" as CTRL
+participant "Repositories" as R
+participant "IrrigationSystemRepository" as ISR
+participant "IrrigationSystem" as IS
+participant "ReadFile" as RF
+participant "IrrigationPlan" as IP
+participant "IrrigationPlanMapper" as IPM
+participant "IrrigationPlanDTO" as IPDTO
+participant "IrrigationPlanOfDay" as IPOD
+participant "IrrigationPlanOfDayMapper" as IPODM
+participant "IrrigationPlanOfDayDTO" as IPODDTO
+participant "Irrigation" as I
+participant "IrrigationMapper" as IM
+participant "IrrigationDTO" as IDTO
+participant "CreateFile" as CF
+
+activate PO
+
+    PO -> UI: asks to see the irrigation system controller simulation
+    activate UI
+
+        UI --> PO: asks the user to import a file with the irrigation plan or imports one by default
+    deactivate UI
+
+    PO -> UI: chooses the desired option related to the file with the irrigation plan data
+    activate UI
+
+        UI -> CTRL: getIrrigationPlanDTO(fileName)
+        activate CTRL
+
+            CTRL -> R: getInstance()
+            activate R
+
+                R --> CTRL: instance
+            deactivate R
+
+            CTRL -> R: getIrrigationSystemRepository()
+            activate R
+
+                R --> CTRL: irrigationSystemRepository
+            deactivate R
+
+            CTRL -> ISR: getIrrigationSystem()
+            activate ISR
+
+                ISR --> CTRL: irrigationSystem
+            deactivate ISR
+
+            CTRL -> IS: readFile(filePath, fileName)
+            activate IS
+
+                IS -> RF: readFile(filePath, fileName)
+                activate RF
+
+                    RF --> IS: fileContent
+                deactivate RF
+
+                IS --> CTRL: fileContent
+            deactivate IS
+
+            CTRL -> IS: createIrrigationPlan(fileContent)
+            activate IS
+
+                IS -> IP: new irrigationPlan
+                activate IP
+
+                    IP -> IPOD: new irrigationPlanOfDay
+                    activate IPOD
+
+                        IPOD -> I: new irrigation
+                        activate I
+
+                            I --> IPOD: irrigation
+                        deactivate I
+
+                        IPOD --> IP: irrigations
+                    deactivate IPOD
+
+                    IP --> IS: irrigationPlan
+
+                IS --> CTRL: irrigationPlan
+            deactivate IS
+
+            CTRL -> IPM: toDTO(irrigationPlan)
+            activate IPM
+
+                IPM -> IPDTO: new irrigationPlanDTO
+                activate IPDTO
+
+                    IPDTO -> IPODM: toDTO(irrigationPlanOfDay)
+                    activate IPODM
+
+                        IPODM -> IPODDTO: new irrigationPlanOfDayDTO
+                        activate IPODDTO
+
+                            IPODDTO -> IM: toDTO(irrigation)
+                            activate IM
+
+                                IM --> IPODDTO: irrigationDTO
+                            deactivate IM
+
+                            IPODDTO --> IPODM: irrigations
+                        deactivate IPODDTO
+
+                        IPODM --> IPDTO: irrigationPlanOfDayDTO
+                    deactivate IPODM
+
+                    IPDTO --> IPM: irrigationPlanDTO
+                deactivate IPDTO
+
+                IPM --> CTRL: irrigationPlanDTO
+            deactivate IPM
+
+            CTRL --> UI: irrigationPlanDTO
+        deactivate CTRL
+
+        UI -> IPDTO: getCreationDate()
+        activate IPDTO
+
+            IPDTO --> UI: creationDate
+        deactivate IPDTO
+
+        UI -> IPDTO: getNumberOfDays()
+        activate IPDTO
+
+            IPDTO --> UI: numberOfDays
+        deactivate IPDTO
+
+        UI --> PO: asks the user to input a date/time slot to check if the system is on or asks if the user wants to check the current status
+    deactivate UI
+
+    PO -> UI: chooses the desired option related to the date/time slot
+    activate UI
+
+        UI -> CTRL: isOn(date, time)
+        activate CTRL
+
+            CTRL -> IS: isOn(date, time)
+            activate IS
+
+                IS --> CTRL: isOn
+            deactivate IS
+
+            CTRL --> UI: isOn
+        deactivate CTRL
+
+        alt the system is on
+            UI -> CTRL: getCurrentIrrigation(date, time)
+            activate CTRL
+
+                CTRL -> IS: getCurrentIrrigation(date, time)
+                activate IS
+
+                    IS --> CTRL: currentIrrigation
+                deactivate IS
+
+                CTRL -> IM: toDTO(currentIrrigation)
+                activate IM
+
+                    IM --> CTRL: irrigationDTO
+                deactivate IM
+
+                CTRL --> UI: currentIrrigationDTO
+            deactivate CTRL
+
+            UI --> PO: shows that the system is on, what's the currently irrigated sector and how many minutes left to end irrigation of said sector
+
+        else the system is off
+
+            autonumber 44
+
+            UI -> CTRL: getNextIrrigation(date, time)
+            activate CTRL
+
+                CTRL -> IS: getNextIrrigation(date, time)
+                activate IS
+
+                    IS --> CTRL: nextIrrigation
+                deactivate IS
+
+                CTRL -> IM: toDTO(nextIrrigation)
+                activate IM
+
+                    IM --> CTRL: irrigationDTO
+                deactivate IM
+
+                CTRL --> UI: nextIrrigationDTO
+            deactivate CTRL
+
+            UI --> PO: shows that the system is off, the next irrigation's details and when it will start (if there's any)
+        end
+
+        UI -> CTRL: createFile()
+        activate CTRL
+
+            CTRL -> IS: createFile()
+            activate IS
+
+                IS -> IS: addContentToIrrigationPlanFile(content, date, firstCycleBegin)
+                IS -> IS: addContentToIrrigationPlanFile(content, date, secondCycleBegin)
+
+                IS -> CF: createFile(filePath, fileName, content)
+                activate CF
+
+                    CF --> IS: fileCreated
+                deactivate CF
+
+                IS --> CTRL: fileCreated
+            deactivate IS
+
+            CTRL --> UI: fileCreated
+        deactivate CTRL
+
+        UI --> PO: shows if the file was created successfully or not
+
+    deactivate UI
+
+deactivate PO
+
+@enduml

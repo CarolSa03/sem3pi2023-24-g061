@@ -1,0 +1,53 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP04 - Register sowing
+
+autonumber
+
+actor "Agricultural Manager" as AM
+participant ":System" as System
+
+AM -> System: select to register sowing
+activate System
+
+System --> AM: show lists of existing plots
+deactivate System
+AM -> System: select plot
+activate System
+
+System --> AM: asks to register type of crop
+deactivate System
+AM -> System: enter crop
+activate System
+
+System --> AM: asks to register quantity
+deactivate System
+AM -> System: enter quantity
+activate System
+
+System --> AM: asks to register sowing start date
+deactivate System
+AM -> System: enter sowing start date
+activate System
+
+System --> AM: asks to register sowing end date
+deactivate System
+AM -> System: enter sowing end date
+activate System
+
+System --> AM: asks to register the climate conditions
+deactivate System
+AM -> System: enter climate conditions
+activate System
+
+System --> AM: asks to confirm registration
+deactivate System
+AM -> System: confirm registration
+activate System
+System --> AM: sowing registered with success
+deactivate System
+
+@enduml

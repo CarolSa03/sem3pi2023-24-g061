@@ -1,0 +1,15 @@
+create or replace procedure prcSeedingRegister(
+    pOperationId            Operation.operationId%type,
+    pCropId                 Operation.cropId%type,
+    pOperationTypeId        Operation.operationTypeId%type,
+    pOperationDate          Operation.operationDate%type,
+    pAmount                 Operation.amount%type,
+    pUnit                   Operation.unit%type
+)
+as
+begin
+
+    insert into Operation(operationId, cropId, operationTypeId, operationDate, amount, unit)
+    values(pOperationId, pCropId, pOperationTypeId, pOperationDate, pAmount, pUnit);
+end;
+/

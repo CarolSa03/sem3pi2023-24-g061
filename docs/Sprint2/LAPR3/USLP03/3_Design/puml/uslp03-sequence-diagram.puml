@@ -1,0 +1,53 @@
+@startuml
+
+title USLP03 - Sequence Diagram
+
+autonumber
+
+actor User
+participant "IrrigationMonitor" as IrrigationMonitor
+participant "WriteInFieldbookUI" as UI
+participant "WriteInFieldbookController" as Controller
+participant "IrrigationSystem" as IrrigationSystem
+participant "IrrigationRepository" as IrrigationRepository
+participant "Fieldbook" as Fieldbook
+
+alt end of irrigation
+    IrrigationMonitor -> UI: run()
+    activate UI
+        UI --> User : states that an operation ended in the irrigation system at that exact moment (it shows the current date and time)
+
+        UI -> Controller: getFinishedOperation()
+
+        activate Controller
+
+            Controller -> IrrigationSystem: getFinishedOperation()
+            activate IrrigationSystem
+
+                IrrigationSystem --> Controller: finishedOperation
+            deactivate IrrigationSystem
+
+            Controller --> UI: finishedOperation
+        deactivate Controller
+
+        UI --> User: shows the details of said operation
+
+        UI -> Controller: writeInFieldbook(id, irrigation)
+        activate Controller
+
+            Controller -> IrrigationRepository : irrigationRegister(id, 1, operationDate, sectorDesignation, durationInMinutes, startTime, endTime)
+
+            Controller -> Fieldbook: writeInFieldbook(map, irrigation)
+            activate Fieldbook
+
+                Fieldbook --> Controller: success
+            deactivate Fieldbook
+
+            Controller --> UI: success
+        deactivate Controller
+
+        UI --> User: shows a success message (if successfully written)
+    deactivate UI
+end
+
+@enduml

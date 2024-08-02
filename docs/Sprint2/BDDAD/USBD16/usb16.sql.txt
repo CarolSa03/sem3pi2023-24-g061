@@ -1,0 +1,41 @@
+CREATE OR REPLACE FUNCTION listOfHarvestedProductsInCertainField(
+    agriculturalPlotName IN Plot.designation%TYPE,
+    beginDate IN VARCHAR,
+    endDate IN VARCHAR
+)
+RETURN SYS_REFCURSOR
+IS
+    resultList SYS_REFCURSOR;
+    agriculturalPlotExists NUMBER := 0;
+    var_agriculturaPLotID Operation.operationId%TYPE;
+BEGIN
+    -- Verify if the agricultural plot exists
+    SELECT COUNT(*) INTO agriculturalPlotExists
+    FROM Plot
+    WHERE LOWER(Plot.designation) LIKE LOWER(agriculturalPlotName);
+
+    -- If the agricultural plot does not exist
+    IF agriculturalPlotExists = 0 THEN
+        -- If the agricultural plot doesn't exist, display a message
+        DBMS_OUTPUT.PUT_LINE('Agricultural plot not found with the provided name.');
+    ELSE
+        -- Select the agricultural plot id
+        SELECT plotId INTO var_agriculturaPlotID
+        FROM Plot
+        WHERE LOWER(Plot.designation) LIKE LOWER(agriculturalPlotName);
+
+        OPEN resultList FOR
+            SELECT Plant.species AS specie, Product.designation AS product
+            FROM Harvest
+            JOIN Operation ON Harvest.operationId = Operation.operationId
+            JOIN Crop ON Operation.cropId = Crop.cropId
+            JOIN Product ON Harvest.productId = Product.productId
+            JOIN Plant ON Product.plantId = Plant.plantId
+            WHERE Operation.operationDate BETWEEN TO_DATE(beginDate, 'DD/Mon/YYYY') AND TO_DATE(endDate, 'DD/Mon/YYYY')
+              AND Crop.plotId = var_agriculturaPLotID
+            GROUP BY Plant.species, Product.designation;
+    END IF;
+
+    RETURN resultList;
+END listOfHarvestedProductsInCertainField;
+/

@@ -1,0 +1,48 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title USLP02 - Domain Model
+
+class IrrigationSystem {
+}
+
+class IrrigationPlan {
+    - creationDate
+    - numberOfDays
+    - firstCycleBegin
+    - firstCycleEnd
+    - secondCycleBegin
+    - secondCycleEnd
+}
+
+class Plot {
+    - designation
+    - area
+}
+
+class Crop {
+    - cropType
+    - cropCycle
+}
+
+class CurrentlyIrrigatedPlot {
+    - durationInMinutes
+    - regularity
+    - minutesLeft
+}
+
+IrrigationSystem "1" -- "1" IrrigationPlan : runs according to >
+IrrigationSystem "1" -- "*" Plot : irrigates >
+IrrigationPlan "1" -- "*" CurrentlyIrrigatedPlot : of >
+CurrentlyIrrigatedPlot "1" - "1" Plot : is
+Plot "1" -- "*" Crop : has >
+
+@enduml

@@ -1,0 +1,213 @@
+@startuml
+
+title USLP11 - Sequence Diagram
+
+autonumber
+
+actor User
+participant "IrrigationMonitor" as IMO
+participant "Repositories" as R
+participant "IrrigationSystemRepository" as ISR
+participant "IrrigationSystem" as IS
+participant "IrrigationPlan" as IP
+participant "Irrigation" as I
+participant "WriteInFieldbookUI" as WFUI
+participant "WriteInFieldbookController" as WFCTRL
+participant "IrrigationPlanMapper" as IPM
+participant "IrrigationPlanDTO" as IPDTO
+participant "IrrigationPlanOfDay" as IPOD
+participant "IrrigationPlanOfDayMapper" as IPODM
+participant "IrrigationPlanOfDayDTO" as IPODDTO
+participant "IrrigationMapper" as IMAP
+participant "IrrigationDTO" as IDTO
+participant "ReadFile" as RF
+participant "Fieldbook" as F
+participant "IrrigationRepository" as IR
+participant "ShowFieldbookUI" as SFUI
+participant "ShowFieldbookController" as SFCTRL
+
+activate PO
+    activate IMO
+
+        IMO -> R : getInstance()
+        activate R
+
+            R --> IMO : repositories
+        deactivate R
+
+        IMO -> R : getIrrigationSystemRepository()
+        activate R
+
+            R -> ISR : getIrrigationSystemRepository()
+            activate ISR
+
+                ISR --> R : irrigationSystemRepository
+            deactivate ISR
+
+            R --> IMO : irrigationSystemRepository
+        deactivate R
+
+        IMO -> ISR : getIrrigationSystem()
+        activate ISR
+
+            ISR -> IS : getIrrigationSystem()
+            activate IS
+
+                IS --> ISR : irrigationSystem
+            deactivate IS
+
+            ISR --> IMO : irrigationSystem
+        deactivate ISR
+
+        IMO -> IS : getIrrigationsEnd()
+        activate IS
+
+            IS -> IP : getIrrigationsPerDay()
+            activate IP
+
+                IP --> IS : irrigationsPerDay
+            deactivate IP
+
+            IS -> I : getIrrigations(date)
+            activate I
+
+                I --> IS : getIrrigations(date)
+                activate I
+
+                    I -> IPOD : getIrrigations(date)
+                    activate IPOD
+
+                        IPOD --> I : irrigations
+                    deactivate IPOD
+
+                    I --> IS : irrigations
+            deactivate I
+
+            IS --> IMO : irrigationsEnd
+        deactivate IS
+
+        IMO -> IMO : scheduleNextTask()
+
+        alt end of irrigation
+            IMO -> IMO : executeNestTask()
+
+            IMO -> WFUI : run()
+            activate WFUI
+
+                WFUI --> PO : shows that an irrigation has ended
+
+                WFUI -> WFCTRL : getFinishedOperation()
+                activate WFCTRL
+
+                    WFCTRL -> IS : getFinishedOperation()
+                    activate IS
+
+                        IS -> IS : getCurrentOperation(currentDate, currentTime)
+
+                        IS -> IP : getIrrigationsPerDay()
+                        activate IP
+
+                            IP --> IS : irrigationsPerDay
+                        deactivate IP
+
+                        IS -> I : getIrrigations(date)
+                        activate I
+
+                            I --> IS : getIrrigations(date)
+                            activate I
+
+                                I -> IPOD : getIrrigations(date)
+
+                                I --> IS : irrigations
+                        deactivate I
+
+                        IS --> WFCTRL : finishedOperation
+                    deactivate IS
+
+                    WFCTRL --> WFUI : irrigation
+                deactivate WFCTRL
+
+                WFUI --> PO: shows the finished operation's details
+
+                WFUI -> WFCTRL : registerInFieldbook(irrigation)
+                activate WFCTRL
+
+                    WFCTRL -> F : registerInFieldbook(irrigation)
+                    activate F
+
+                        F -> IS : getLastIrrigationInFieldbook(irrigation)
+                        activate IS
+
+                            IS -> IR : getLastIrrigationInFieldbook(irrigation)
+                            activate IR
+
+                                IR --> IS : lastIrrigationInFieldbook
+                            deactivate IR
+
+                            IS --> F : lastIrrigationInFieldbook
+                        deactivate IS
+
+                        loop for each irrigation in irrigationsSinceLast
+
+                            F -> IR : irrigationRegister(irrigation)
+                            activate IR
+
+                                IR -> IR : irrigationRegister(irrigation)
+                            deactivate IR
+
+                            F -> F : writeInFieldbook(irrigation)
+                        end
+
+                        F --> WFCTRL : written
+                    deactivate F
+
+                    WFCTRL --> WFUI : written
+                deactivate WFCTRL
+
+                WFUI --> PO : shows that the irrigation has been registered in the fieldbook
+
+                WFUI -> SFUI : run()
+                activate SFUI
+
+                    SFUI -> SFCTRL : getFieldbookIrrigations()
+                    activate SFCTRL
+
+                        SFCTRL -> R : getInstance()
+                        activate R
+
+                            R --> SFCTRL : repositories
+                        deactivate R
+
+                        SFCTRL -> R : getIrrigationRepository()
+                        activate R
+
+                            R -> IR : getIrrigationRepository()
+                            activate IR
+
+                                IR --> R : irrigationRepository
+                            deactivate IR
+
+                            R --> SFCTRL : irrigationRepository
+                        deactivate R
+
+                        SFCTRL -> IR : getFieldbookIrrigations()
+                        activate IR
+
+                            IR -> IR : resultSetToList(resultSet)
+
+                            IR --> SFCTRL : irrigations
+                        deactivate IR
+
+                        SFCTRL --> SFUI : irrigations
+                    deactivate SFCTRL
+
+                    SFUI --> PO : shows the irrigations registered in the fieldbook (DBMS)
+                deactivate SFUI
+            deactivate WFUI
+
+        end
+
+    deactivate IMO
+deactivate PO
+
+@enduml

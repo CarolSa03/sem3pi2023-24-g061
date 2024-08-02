@@ -1,0 +1,44 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP11 - System Sequence Diagram (SSD)
+
+autonumber
+
+actor "Product Owner" as ProductOwner
+participant ":System" as System
+
+activate ProductOwner
+
+    activate System
+
+        System -> System : gets a list with the irrigations end times
+        loop for each end of irrigation
+
+            System --> ProductOwner : shows that an irrigation ended and its specific details
+
+            System -> System : registers all irrigations since the last one registered in the fieldbook (in both DBMS and .csv file)
+
+            System --> ProductOwner : shows if the registrations were successful or not
+
+            alt the irrigations were registered successfully
+
+                System -> System : gets the list of irrigations currently registered in fieldbook
+
+                System --> ProductOwner : shows the list of irrigations that currently registered in fieldbook
+
+            else the irrigations were not registered successfully
+
+                autonumber 5
+
+                System -> System : prints an error message
+
+            end
+        end
+    deactivate System
+
+deactivate ProductOwner
+
+@enduml

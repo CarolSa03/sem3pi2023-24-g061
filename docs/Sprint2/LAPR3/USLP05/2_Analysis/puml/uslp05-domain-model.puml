@@ -1,0 +1,41 @@
+@startuml
+
+skinparam monochrome false
+skinparam class {
+    BackgroundColor LightYellow
+    BorderColor Black
+    ArrowColor Black
+}
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title "USLP05 - Domain Model"
+
+class Plot {
+    - designation
+    - area
+}
+
+class Crop {
+    - name
+    - cultureType
+    - cultureCycle
+}
+
+class Operation {
+    - date
+    - amount
+    - unit
+}
+
+FarmManager "1" -- "*" Weeding : registration of >
+Plot "1" -- "*" Crop : has >
+Weeding --|> Operation : can be >
+Weeding -- Crop : acts on >
+
+@enduml

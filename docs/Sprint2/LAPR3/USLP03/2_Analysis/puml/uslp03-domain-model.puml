@@ -1,0 +1,64 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title USLP03 - Domain Model
+
+class Irrigation {
+    - id : Integer
+    - {static} fieldbookId : Integer
+    - operationDate : LocalDate
+    - durationInMinutes : Integer
+    - startTime : LocalTime
+    - endTime : LocalTime
+    - regularity : String
+}
+
+class IrrigationSystem {
+}
+
+class IrrigationPlan {
+    - {static} creationDate : LocalDate
+    - {static} numberOfDays : int
+
+class IrrigationPlanOfDay {
+    - firstCycleBegin : LocalTime
+    - firstCycleEnd : LocalTime
+    - secondCycleBegin : LocalTime
+    - secondCycleEnd : LocalTime
+}
+
+class IrrigationMonitor {
+    - running : boolean
+}
+
+class CurrentlyIrrigatedSector {
+    - durationInMinutes : Integer
+    - regularity : String
+    - minutesLeft : Integer
+}
+
+class Sector {
+    - id : Integer
+    - designation : String
+}
+
+class Fieldbook {
+}
+
+IrrigationMonitor "1" -- "1" IrrigationSystem : monitors >
+IrrigationSystem "1" -- "1" IrrigationPlan : follows >
+IrrigationPlan "1" -- "*" IrrigationPlanOfDay : consists of >
+IrrigationPlanOfDay "1" -- "*" Irrigation : has >
+CurrentlyIrrigatedSector "1" -- "1" Sector : is a >
+Irrigation "*" -- "1" Sector : of a >
+Fieldbook "1" -- "*" Irrigation : registers >
+
+@enduml

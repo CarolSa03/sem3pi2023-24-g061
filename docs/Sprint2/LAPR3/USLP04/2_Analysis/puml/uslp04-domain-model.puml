@@ -1,0 +1,78 @@
+@startuml
+
+skinparam monochrome false
+skinparam class {
+    BackgroundColor LightYellow
+    BorderColor Black
+    ArrowColor Black
+}
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title "USLP04 - Domain Model"
+
+class FarmManager {
+    - name
+    - address
+    - phone
+    - email
+}
+
+class FieldBook {
+    - typeOfRegistration
+    - sensorRegistration
+}
+
+class Plot {
+    - designation
+    - area
+}
+
+class Crop {
+    - name
+    - cultureType
+    - cultureCycle
+}
+
+class WeatherStation {
+    - windSensor
+    - temperatureSensor
+    - humiditySensor
+    - pressureSensor
+    - rainSensor
+    - radiationSensor
+}
+
+class SoilSensor {
+    - humidity
+    - temperature
+    - ph
+    - salinity
+}
+
+class Sowing {
+    - quantity
+    - plot
+    - crop
+}
+
+class Operation {
+    - date
+    - amount
+    - unit
+}
+
+FarmManager "1" -- "1" FieldBook : manages >
+FieldBook "1" -- "*" Sowing : registration of >
+FieldBook "1" -- "1" WeatherStation : registration of >
+FieldBook "1" -- "1...*" SoilSensor : registration of >
+Plot "1" -- "*" Crop : has >
+Sowing --|> Operation : can be >
+Sowing -- Crop : acts on >
+
+@enduml

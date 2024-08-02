@@ -1,0 +1,211 @@
+@startuml
+
+title US020 - Sequence Diagram
+
+autonumber
+
+actor "Product Owner" as PO
+participant "IrrigationSystemUI" as UI
+participant "IrrigationSystemController" as CTRL
+participant "ReadFile" as RF
+participant "IrrigationSystem" as IS
+participant "IrrigationPlan" as IP
+participant "IrrigationPlanMapper" as IPM
+participant "IrrigationPlanDTO" as IPDTO
+participant "CurrentlyIrrigatedPlot" as CIP
+participant "CurrentlyIrrigatedPlotMapper" as CIPM
+participant "CurrentlyIrrigatedPlotDTO" as CIPDTO
+participant "Plot" as P
+participant "PlotMapper" as PM
+participant "PlotDTO" as PDTO
+participant "Crop" as C
+participant "CropMapper" as CM
+participant "CropDTO" as CDTO
+participant "CreateFile" as CF
+
+activate PO
+
+    PO -> UI: asks to see the irrigation system controller simulation
+    activate UI
+
+        UI --> PO: asks the user to import a file with the irrigation plan or imports one by default
+    deactivate UI
+
+    PO -> UI: chooses the desired option related to the file with the irrigation plan data
+    activate UI
+
+        UI -> CTRL: getFileContent(fileName)
+        activate CTRL
+
+            CTRL -> RF: run(filePath, fileName)
+            activate RF
+
+                RF --> CTRL: fileContent
+            deactivate RF
+
+            CTRL --> UI: fileContent
+
+        deactivate CTRL
+
+        UI -> CTRL: getIrrigationPlanDTO(fileContent)
+        activate CTRL
+
+            CTRL -> IS: createIrrigationPlan(fileContent)
+            activate IS
+
+                IS -> IP: new irrigationPlan
+                activate IP
+
+                    IP --> IS: irrigationPlan
+                deactivate IP
+
+                IS --> CTRL: irrigationPlan
+            deactivate IS
+
+            CTRL -> IPM: toDTO(irrigationPlan)
+            activate IPM
+
+                IPM -> IPDTO: new irrigationPlanDTO
+                activate IPDTO
+
+                    IPDTO --> IPM: irrigationPlanDTO
+                deactivate IPDTO
+
+                IPM --> CTRL: irrigationPlanDTO
+            deactivate IPM
+
+            CTRL --> UI: irrigationPlanDTO
+        deactivate CTRL
+
+        UI -> IPDTO: getCreationDate()
+        activate IPDTO
+
+            IPDTO --> UI: creationDate
+        deactivate IPDTO
+
+        UI -> IPDTO: getNumberOfDays()
+        activate IPDTO
+
+            IPDTO --> UI: numberOfDays
+        deactivate IPDTO
+
+        UI --> PO: asks the user to input a date/time slot to check if the system is on or asks if the user wants to check the current status
+    deactivate UI
+
+    PO -> UI: chooses the desired option related to the date/time slot
+    activate UI
+
+        UI -> CTRL: isOn(date, time)
+        activate CTRL
+
+            CTRL -> IS: isOn(date, time)
+            activate IS
+
+                IS --> CTRL: isOn
+            deactivate IS
+
+            CTRL --> UI: isOn
+        deactivate CTRL
+
+        alt the system is on
+            UI -> CTRL: getCurrentlyIrrigatedPlotDTO(date, time)
+            activate CTRL
+
+                CTRL -> IS: getCurrentlyIrrigatedPlot(date, time)
+                activate IS
+
+                    IS -> CIP: new currentlyIrrigatedPlot
+                    activate CIP
+
+                        CIP -> P: new plot
+                        activate P
+
+                            P -> C: new crop
+                            activate C
+
+                                C --> P: crop
+                            deactivate C
+
+                            P --> CIP: plot
+                        deactivate P
+
+                        CIP --> IS: currentlyIrrigatedPlot
+                    deactivate CIP
+
+                    IS --> CTRL: currentlyIrrigatedPlot
+                deactivate IS
+
+                CTRL -> CIPM: toDTO(currentlyIrrigatedPlot)
+                activate CIPM
+
+                    CIPM -> PM: toDTO(plot)
+                    activate PM
+
+                        PM -> PDTO: new plotDTO
+                        activate PDTO
+
+                            PDTO --> PM: plotDTO
+                        deactivate PDTO
+
+                        PM -> CM: toDTO(crop)
+                        activate CM
+
+                            CM -> CDTO: new cropDTO
+                            activate CDTO
+
+                                CDTO --> CM: cropDTO
+                            deactivate CDTO
+
+                            CM --> PM: cropDTO
+                        deactivate CM
+
+                        PM --> CIPM: plotDTO
+                    deactivate PM
+
+                    CIPM -> CIPDTO: new currentlyIrrigatedPlotDTO
+                    activate CIPDTO
+
+                        CIPDTO --> CIPM: currentlyIrrigatedPlotDTO
+                    deactivate CIPDTO
+
+                    CIPM --> CTRL: currentlyIrrigatedPlotDTO
+                deactivate CIPM
+
+                CTRL --> UI: currentlyIrrigatedPlotDTO
+            deactivate CTRL
+
+            UI --> PO: shows that the system is on and what's the currently irrigated plot and how many minutes left to end irrigation of said plot
+
+            UI -> CTRL: createFile()
+            activate CTRL
+
+                CTRL -> IS: createFile()
+                activate IS
+
+                    IS -> IS: addContentToIrrigationPlanFile(content, date, firstCycleBegin)
+                    IS -> IS: addContentToIrrigationPlanFile(content, date, secondCycleBegin)
+
+                    IS -> CF: run(filePath, fileName, content)
+                    activate CF
+
+                        CF --> IS: fileCreated
+                    deactivate CF
+
+                    IS --> CTRL: fileCreated
+                deactivate IS
+
+                CTRL --> UI: fileCreated
+            deactivate CTRL
+
+            UI --> PO: shows if the file was created successfully or not
+
+        else the system is off
+
+            UI --> PO: shows that the system is off
+        end
+
+    deactivate UI
+
+deactivate PO
+
+@enduml

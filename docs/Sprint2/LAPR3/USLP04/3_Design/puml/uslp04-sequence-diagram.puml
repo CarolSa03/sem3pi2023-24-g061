@@ -1,0 +1,79 @@
+@startuml
+
+autonumber
+
+actor User
+participant "OperationSowingRegisterUI" as UI
+participant "OperationSowingRegisterController" as Controller
+participant "Repositories" as Repositories
+participant "OperationSowingRepository" as SowingRepository
+
+User -> UI: run()
+activate UI
+
+    UI --> User: Display Operations List
+    deactivate UI
+    User -> UI: Chooses Operation
+    activate UI
+
+    UI --> User: Display Plots List
+    deactivate UI
+    User -> UI: Chooses Plot
+    activate UI
+
+    UI --> User: Asks for Operation Date
+    deactivate UI
+    User -> UI: Types Operation Date
+    activate UI
+
+    UI --> User:  Asks if wants to add quantity value
+    deactivate UI
+
+    alt If Operation has QuantityValue
+        User -> UI: Types quantity Value
+        activate UI
+        UI --> User: Asks for quantity Unit
+        deactivate UI
+        User -> UI: Types quantity Unit
+        activate UI
+    end
+
+    UI --> User:  Asks if wants to add area value
+    deactivate UI
+
+    alt If Operation has AreaValue
+        User -> UI: Types area Value
+        activate UI
+        UI --> User: Asks for quantity Unit
+        deactivate UI
+        User -> UI: Types quantity Unit
+        activate UI
+    end
+
+    UI --> User: Display Crops List
+    deactivate UI
+    User -> UI: Chooses a Crop
+    activate UI
+
+    UI -> Controller: operationSowingRegister(operationId, operationDate, plotId, quantityValue, areaValue, quantityUnitId, areaUnitId, cropId)
+    activate Controller
+
+        Controller -> Repositories: getInstance()
+        activate Repositories
+
+            Repositories --> Controller: Return instance
+        deactivate Repositories
+
+        Controller -> SowingRepository: operationSowingRegister(operationId, operationDate, plotId, quantityValue, areaValue, quantityUnitId, areaUnitId, cropId)
+        activate SowingRepository
+
+            SowingRepository --> Controller: [Database Operation Result]
+        deactivate SowingRepository
+
+        Controller --> UI: [Result of Operation]
+    deactivate Controller
+
+    UI --> User: Display "Operation registered successfully" or "Error registering operation"
+deactivate UI
+
+@enduml

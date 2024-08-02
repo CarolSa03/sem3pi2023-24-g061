@@ -1,0 +1,29 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+left to right direction
+
+class OperationWeedingRegisterUI{
+}
+
+class OperationWeedingRegisterController{
+}
+
+class OperationWeedingRegisterRepository{
+}
+
+class Operation{
+}
+
+class Crop{
+}
+OperationWeedingRegisterUI ..> OperationWeedingRegisterController
+OperationWeedingRegisterController ..> OperationWeedingRegisterRepository
+OperationWeedingRegisterRepository *-- Crop
+OperationWeedingRegisterRepository *-- Operation
+
+@enduml

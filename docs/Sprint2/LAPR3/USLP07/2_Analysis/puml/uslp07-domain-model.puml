@@ -1,0 +1,64 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title USLP07 - Domain Model
+
+class Operation {
+    + operationId : Integer
+    + operationDate : LocalDate
+}
+
+class Plot {
+    + plotId : Integer
+}
+
+class ProductionFactor {
+    + productionFactorId : Integer
+    + designation : String
+}
+
+class Crop {
+    + cropId : Integer
+}
+
+class Plant {
+    + plantId : Integer
+}
+
+class PlantVariety {
+    + plantVarietyId : Integer
+    + designation : String
+    + species : String
+    + commonName : String
+}
+
+class FertilizationMode {
+    + fertilizationModeId : Integer
+    + designation : String
+}
+
+class ProductionFactorAppliance {
+}
+
+class CropFertilization {
+}
+
+Operation "1" -- "1" Plot : in a >
+Operation "1" <|- "1" ProductionFactorAppliance : is a <
+ProductionFactorAppliance "1" -- "0..*" ProductionFactor : uses >
+ProductionFactorAppliance "1" <|- "1" Fertilization : is a <
+Fertilization "1" <|- "1" CropFertilization : is a <
+Fertilization "1" -- "1" FertilizationMode : has >
+CropFertilization "1" -- "0..*" Crop : in a >
+Crop "1" -- "1" Plant : has >
+Plant "0..*" -- "1" PlantVariety : has >
+
+@enduml

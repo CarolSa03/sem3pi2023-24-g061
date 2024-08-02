@@ -1,0 +1,75 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+title USLP11 - Class Diagram
+
+class WriteInFieldbookUI {
+    - controller : WriteInFieldbookController
+    + WriteInFieldbookUI()
+    + run() : void
+}
+
+class WriteInFieldbookController {
+    + writeInFieldbook(irrigation : Irrigation) : boolean
+    + getFinishedOperation() : Irrigation
+}
+
+class IrrigationRepository {
+    + IrrigationRepository()
+    + getIrrigations() : List<Irrigation>
+    + irrigationRegister(irrigationId : Integer, fieldbookId : Integer, operationDate : LocalDate, sectorDesignation : String, durationInMinutes : Integer, startTime : LocalTime, endTime : LocalTime) : void
+    + resultSetToList(resultSet : ResultSet) : List<Irrigation>
+}
+
+class Irrigation {
+    - id : Integer
+    - sector : Sector
+    - operationDate : LocalDate
+    - durationInMinutes : Integer
+    - startTime : LocalTime
+    - endTime : LocalTime
+    - regularity : String
+}
+
+class Fieldbook {
+    + {static} writeInFieldbook(irrigation : Irrigation) : boolean
+    + {static} registerInFieldbook(irrigationRepository: IrrigationRepository, irrigationSystem : IrrigationSystem, plotId : Integer, irrigation : Irrigation) : boolean
+}
+
+class IrrigationSystem {
+    - irrigationPlan : IrrigationPlan
+    + endOfOperation() : boolean
+    + getFinishedOperation() : Irrigation
+}
+
+class IrrigationPlan {
+    - {static} creationDate : LocalDate
+    - {static} numberOfDays : int
+    - irrigationsPerDay : Map<LocalDate, IrrigationPlanOfDay>
+}
+
+class IrrigationPlanOfDay {
+    - cycleBegins : List<LocalTime>
+    - cycleEnds : List<LocalTime>
+    - irrigationList : List<Irrigation>
+    + addCycleBegin(cycleBegin : LocalTime) : boolean
+    + addCycleEnd(cycleEnd : LocalTime) : boolean
+}
+
+WriteInFieldbookUI -> WriteInFieldbookController
+WriteInFieldbookController --> IrrigationRepository : registers in >
+WriteInFieldbookController --> Fieldbook : writes in >
+WriteInFieldbookController --> IrrigationSystem : uses >
+IrrigationSystem .-> IrrigationPlan : creates >
+IrrigationPlan .-> IrrigationPlanOfDay : consists of >
+IrrigationSystem .-> Irrigation : gets a >
+IrrigationPlan .-> Irrigation : of >
+Irrigation .-> Fieldbook : written in >
+Irrigation .-> Sector : of a >
+
+@enduml

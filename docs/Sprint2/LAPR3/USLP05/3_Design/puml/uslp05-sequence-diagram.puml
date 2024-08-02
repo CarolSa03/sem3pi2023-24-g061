@@ -1,0 +1,90 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+'hide footbox
+actor "FarmManager" as manager
+participant ": OperationWeedingRegisterUI" as UI
+participant ": OperationWeedingRegisterController" as Controller
+participant ": Repositories" as Repositories
+participant ": OperationWeedingRegisterRepository" as Repository
+participant ": Operation" as operation
+participant ": Crop" as crop
+
+activate manager
+manager -> UI :  requests to register a new Weeding Operation
+activate UI
+
+UI --> manager : requests operation id
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> manager : requests operation date
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> manager : requests plot id
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> manager : requests crop id
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> manager : requests value
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> manager : requests unit
+deactivate UI
+
+manager -> UI : types requested data
+activate UI
+
+UI -> Controller : requests to register a new Weeding Operation
+activate Controller
+
+Controller -> Repositories : gets instance()
+activate Repositories
+
+Repositories -> Controller : instance
+deactivate Repositories
+
+Controller -> Repository : gets OperationWeedingRegisterRepository
+activate Repository
+
+Repository -> Controller : OperationWeedingRegisterRepository
+deactivate Repository
+
+Controller --> Repository : operationWeedingRegister(operationId, operationDate, plotId, cropId, value, unit)
+activate Repository
+
+Repository -> Repository : call prcOperationWeedingRegister
+activate Repository
+
+Repository -> Repository : gets operation
+deactivate Repository
+
+Repository -> Controller : weeding operation registered
+deactivate Repository
+
+Controller -> UI : weeding operation registered
+deactivate Controller
+
+UI -> manager : weeding operation registered
+deactivate UI
+
+@enduml

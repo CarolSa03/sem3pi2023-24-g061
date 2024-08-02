@@ -1,0 +1,8 @@
+Sensor ID: 1
+Sensor Name: soil_humidity
+Latest Sensor Value: 21.60
+
+Sensor ID: 4
+Sensor Name: atmospheric_humidity
+Latest Sensor Value: 20.00
+

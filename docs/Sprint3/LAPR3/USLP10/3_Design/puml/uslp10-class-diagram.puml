@@ -1,0 +1,168 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+title USLP10 - Class Diagram
+
+class IrrigationSystemUI {
+    + run()
+    + showStatus()
+}
+
+class IrrigationSystemController {
+    - irrigationSystem
+    - fileContent
+    + IrrigationSystemController()
+    + getFileContent(fileName)
+    + getIrrigationSystem() : IrrigationSystem
+    + getIrrigationPlanDTO() : IrrigationPlanDTO
+    + isOn(currentDate, currentTime) : boolean
+    + createFile() : boolean
+}
+
+class Repositories {
+    - irrigationSystemRepository
+    + getInstance() : Repositories
+    + getIrrigationSystemRepository() : IrrigationSystemRepository
+}
+
+class IrrigationSystemRepository {
+    - irrigationSystem
+}
+
+class IrrigationSystem {
+    - irrigationPlan
+    + createIrrigationPlan(fileContent) : IrrigationPlan
+    + isOn(date, time) : boolean
+    + checkIfOnInDay(date, regularity) : boolean
+    + checkIfFertigationInDay(date, mixRecurrence) : boolean
+    + getCurrentIrrigation(date, time) : Pair<Irrigation, Integer>
+    + isFertigation(split) : boolean
+    + createFile() : boolean
+    + getNextIrrigation(date, time) : Irrigation
+}
+
+class IrrigationPlan {
+    - creationDate
+    - numberOfDays
+    - irrigationsPerDay
+}
+
+class IrrigationPlanOfDay {
+    - cycleBegins
+    - cycleEnds
+    - irrigationList
+}
+
+class Irrigation {
+    - sector
+    - operationDate
+    - durationInMinutes
+    - startTime
+    - endTime
+    - regularity
+}
+
+class Fertigation {
+    - mix
+    - mixRecurrence
+}
+
+class Recipe {
+    - id
+}
+
+class ProductionFactor {
+    - productionFactorId
+    - designation
+}
+
+class IrrigationPlanMapper {
+    + mapToDTO(irrigationPlan) : IrrigationPlanDTO
+    + mapToEntity(irrigationPlanDTO) : IrrigationPlan
+}
+
+class IrrigationPlanDTO {
+    - creationDate
+    - numberOfDays
+    - irrigationsPerDay
+}
+
+class IrrigationPlanOfDayMapper {
+    + mapToDTO(irrigationPlanOfDay) : IrrigationPlanOfDayDTO
+    + mapToEntity(irrigationPlanOfDayDTO) : IrrigationPlanOfDay
+}
+
+class IrrigationPlanOfDayDTO {
+    - cycleBegins
+    - cycleEnds
+    - irrigationList
+}
+
+class IrrigationMapper {
+    + mapToDTO(irrigation) : IrrigationDTO
+    + mapToEntity(irrigationDTO) : Irrigation
+}
+
+class IrrigationDTO {
+    - sector
+    - operationDate
+    - durationInMinutes
+    - startTime
+    - endTime
+    - mixId
+}
+
+class CreateFile {
+    + createFile(filePath, fileName, content) : boolean
+}
+
+class ReadFile {
+    + readFile(filePath, fileName) : List<String>
+}
+
+IrrigationSystemUI .-> IrrigationSystemController
+
+IrrigationSystemController .-> Repositories
+IrrigationSystemController .-> IrrigationSystemRepository
+IrrigationSystemController .-> ReadFile
+IrrigationSystemController .-> CreateFile
+IrrigationSystemController .-> IrrigationSystem
+
+Repositories .-> IrrigationSystemRepository
+
+IrrigationSystemRepository --> IrrigationSystem
+
+IrrigationSystem --> IrrigationPlan
+
+IrrigationPlan --> IrrigationPlanOfDay
+
+IrrigationPlanOfDay --> Irrigation
+
+IrrigationSystemController --> IrrigationPlanMapper
+IrrigationSystemController --> IrrigationPlanOfDayMapper
+IrrigationSystemController --> IrrigationMapper
+
+IrrigationPlanMapper --> IrrigationPlan
+IrrigationPlanOfDayMapper --> IrrigationPlanOfDay
+IrrigationMapper --> Irrigation
+
+IrrigationPlanMapper --> IrrigationPlanDTO
+IrrigationPlanOfDayMapper --> IrrigationPlanOfDayDTO
+IrrigationMapper --> IrrigationDTO
+
+IrrigationPlanDTO --> IrrigationPlanOfDayMapper
+
+IrrigationPlanOfDayDTO --> IrrigationMapper
+
+Irrigation <-- Fertigation
+
+Fertigation --> Recipe
+
+Recipe --> ProductionFactor
+
+@enduml

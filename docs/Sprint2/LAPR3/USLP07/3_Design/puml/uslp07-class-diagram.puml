@@ -1,0 +1,63 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+title USLP07 - Class Diagram
+
+class ProductionFactorApplianceRegisterUI {
+    - controller : ProductionFactorApplianceRegisterController
+    + ProductionFactorApplianceRegisterUI()
+    + run() : void
+}
+
+class ProductionFactorApplianceRegisterController {
+    - productionFactorApplianceRepository : ProductionFactorApplianceRepository
+    + ProductionFactorApplianceRegisterController()
+    + productionFactorApplianceRegister(operationId : Integer, plotId : Integer, operationDate : LocalDate, value : Double, unitId : Integer, productionFactorId : Integer, fertilizationModeId : Integer, cropId : Integer) : void
+}
+
+class ProductionFactorApplianceRepository {
+    + ProductionFactorApplianceRepository()
+    + getProductionFactorAppliances(pPlotId : Integer, pInitialDate : LocalDate, pFinalDate : LocalDate) : List<ProductionFactorApplianceDTO>
+    + productionFactorApplianceRegister(operationId : Integer, plotId : Integer, operationDate : LocalDate, value : Double, unitId : Integer, productionFactorId : Integer, fertilizationModeId : Integer, cropId : Integer) : void
+    + productionFactorApplianceDelete(operationId : Integer) : int
+    - resultSetToList(resultSet : ResultSet) : List<ProductionFactorApplianceDTO>
+}
+
+class Repositories {
+    - plotRepository : PlotRepository
+    - operationRepository : OperationRepository
+    - productionFactorApplianceRepository : ProductionFactorApplianceRepository
+    - fertilizationRepository : FertilizationRepository
+    + getInstance() : Repositories
+    + getPlotRepository() : PlotRepository
+    + getOperationRepository() : OperationRepository
+    + getProductionFactorApplianceRepository() : ProductionFactorApplianceRepository
+    + getFertilizationRepository() : FertilizationRepository
+}
+
+class ProductionFactorApplianceDTO {
+    - operationDate : LocalDate
+    - productionFactorDesignation : String
+    - plantDesignation : String
+    + ProductionFactorApplianceDTO(operationDate : LocalDate, productionFactorDesignation : String, plantDesignation : String)
+    + getOperationDate() : LocalDate
+    + setOperationDate(operationDate : LocalDate) : void
+    + getProductionFactorDesignation() : String
+    + setProductionFactorDesignation(productionFactorDesignation : String) : void
+    + getPlantDesignation() : String
+    + setPlantDesignation(plantDesignation : String) : void
+    + equals(Object) : boolean
+    + toString() : String
+}
+
+ProductionFactorApplianceRegisterUI --> ProductionFactorApplianceRegisterController
+ProductionFactorApplianceRegisterController --> Repositories
+Repositories .> ProductionFactorApplianceRepository
+ProductionFactorApplianceRepository .right.> ProductionFactorApplianceDTO
+
+@enduml

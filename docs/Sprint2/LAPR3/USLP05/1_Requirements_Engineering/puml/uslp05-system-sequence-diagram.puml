@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP05 - Register Weeding Operation
+
+autonumber
+
+actor "Agricultural Manager" as AM
+participant ":System" as System
+
+activate AM
+
+AM -> System: select to register weeding operation
+activate System
+
+System --> AM: requests plot id
+deactivate System
+AM -> System: select plot
+activate System
+
+System --> AM: requests crop id
+deactivate System
+AM -> System: select crop
+activate System
+
+System --> AM: requests date
+deactivate System
+AM -> System: enter date
+activate System
+
+System --> AM: requests amount
+deactivate System
+AM -> System: selects amount
+activate System
+
+System --> AM: requests unit id
+deactivate System
+AM -> System: selects unit
+activate System
+
+System --> AM: weeding operation created
+deactivate System
+
+@enduml

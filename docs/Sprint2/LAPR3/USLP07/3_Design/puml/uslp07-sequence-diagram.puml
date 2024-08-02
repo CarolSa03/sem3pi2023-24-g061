@@ -1,0 +1,78 @@
+@startuml
+
+title USLP07 - Sequence Diagram
+
+autonumber
+
+actor User
+participant "ProductionFactorApplianceRegisterUI" as UI
+participant "ProductionFactorApplianceRegisterController" as Controller
+participant "repositories : Repositories" as Repositories
+participant "productionFactorApplianceRepository : ProductionFactorApplianceRepository" as PFARepository
+participant "productionFactorApplianceDTO : ProductionFactorApplianceDTO" as DTO
+
+User -> UI: run()
+activate UI
+
+    UI --> User: Shows operationId (automatic) and plots list
+
+    UI --> User: Prompt "PlotId: "
+    User -> UI: plotId
+
+    UI --> User: Prompt "OperationDate: "
+    User -> UI: operationDate
+
+    UI --> User: Prompt "Value: "
+    User -> UI: value
+
+    UI --> User: Prompt "UnitId: "
+    User -> UI: unitId
+
+    UI --> User: Prompt "ProductionFactorId: "
+    User -> UI: productionFactorId
+
+    alt If Operation is Fertilization
+        UI --> User: Confirm "Is the operation a fertilization?"
+        User -> UI: [Yes/No]
+
+        alt If Fertilization is on Crop
+            UI --> User: Display Fertilization Modes List
+            UI --> User: Prompt "FertilizationModeId: "
+            User -> UI: fertilizationModeId
+
+            UI --> User: Confirm "Is the fertilization made on a crop?"
+            User -> UI: [Yes/No]
+            UI --> UI: Display Crops List
+            UI --> User: Prompt "CropId: "
+            User -> UI: cropId
+        end
+    end
+
+    UI -> Controller: productionFactorApplianceRegister(operationId, plotId, operationDate, value, unitId, productionFactorId, fertilizationModeId, cropId)
+    activate Controller
+
+        Controller -> Repositories: getInstance()
+        activate Repositories
+
+            Repositories --> Controller: Return instance
+        deactivate Repositories
+
+        Controller -> PFARepository: productionFactorApplianceRegister(operationId, plotId, operationDate, value, unitId, productionFactorId, fertilizationModeId, cropId)
+        activate PFARepository
+
+            PFARepository -> DTO: Create new ProductionFactorApplianceDTO
+            activate DTO
+
+                DTO --> PFARepository: Return DTO instance
+            deactivate DTO
+
+            PFARepository --> Controller: [Database Operation Result]
+        deactivate PFARepository
+
+        Controller --> UI: [Result of Operation]
+    deactivate Controller
+
+    UI --> User: Display "Operation registered successfully" or "Error registering operation"
+deactivate UI
+
+@enduml

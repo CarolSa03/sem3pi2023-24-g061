@@ -1,0 +1,30 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP03 - System Sequence Diagram (SSD)
+
+autonumber
+
+actor "Product Owner" as ProductOwner
+participant ":System" as System
+
+activate ProductOwner
+
+    loop
+        activate System
+            System -> System: each minute, it checks if an operation has ended in the irrigation system
+
+        alt operation ended
+            System --> ProductOwner: sends a notification to the product owner, informing the details of said operation
+
+            System -> : System : writes said operation in fieldbook and registers it in the database
+        end
+
+        deactivate System
+    end
+
+deactivate ProductOwner
+
+@enduml

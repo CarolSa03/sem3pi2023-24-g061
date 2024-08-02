@@ -1,0 +1,64 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP07 - System Sequence Diagram (SSD)
+
+autonumber
+
+actor "Product Owner" as ProductOwner
+participant ":System" as System
+
+activate ProductOwner
+
+    ProductOwner -> System: asks to register a new production factor appliance operation.
+    activate System
+
+        System --> ProductOwner: shows the user the operationId (one more than the last one registered) and asks the user to input the id of the plot where the operation took place (after showing him all the plots).
+    deactivate System
+
+    ProductOwner -> System: chooses the desired plot.
+    activate System
+
+        System --> ProductOwner: asks the user to input the date when the operation took place.
+    deactivate System
+
+    ProductOwner -> System: gives the date.
+    activate System
+
+        System --> ProductOwner: asks the user to input the quantity and/or area of the operation, as well as the respective unit.
+    deactivate System
+
+    ProductOwner -> System: gives the quantity and/or area of the operation, as well as the respective unit.
+    activate System
+
+        System --> ProductOwner: asks the user to input the id of the production factor used in the operation (after showing him the full list).
+    deactivate System
+
+    ProductOwner -> System: chooses the desired production factor.
+    activate System
+
+    alt the operation is a fertilization
+            System --> ProductOwner: asks the user to input the mode the fertilization was made (in soil or foliar) in case the operation is a fertilization.
+        deactivate System
+
+        ProductOwner -> System: gives the mode.
+        activate System
+
+            System --> ProductOwner: asks the user to input a crop (after showing him the full list) if wanted.
+        deactivate System
+
+        ProductOwner -> System: gives the crop.
+        activate System
+
+    else the operation is not a fertilization
+
+    end
+
+        System --> ProductOwner: says if the operation was successfull or not.
+    deactivate System
+
+deactivate ProductOwner
+
+@enduml

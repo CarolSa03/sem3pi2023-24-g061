@@ -1,0 +1,255 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+title USLP02 - Class Diagram
+
+class IrrigationSystemUI {
+    + run()
+    + showStatus()
+}
+
+class IrrigationSystemController {
+    - irrigationSystem
+    - fileContent
+    + IrrigationSystemController()
+    + getFileContent(fileName)
+    + getIrrigationSystem() : IrrigationSystem
+    + getIrrigationPlanDTO() : IrrigationPlanDTO
+    + isOn(currentDate, currentTime) : boolean
+    + getCurrentIrrigatedPlotDTO() : CurrentlyIrrigatedPlotDTO
+    + createFile() : boolean
+}
+
+class IrrigationSystem {
+    + createIrrigationPlan(fileContent) : IrrigationPlan
+    + isOn(date, time) : boolean
+    + checkIfOffInDay(date, regularity) : boolean
+    + getCurrentIrrigatedPlot(date, time) : CurrentlyIrrigatedPlot
+    + createFile() : boolean
+    - addContentToIrrigationPlanFile(content, date, start)
+}
+
+class IrrigationPlan {
+    - creationDate
+    - numberOfDays
+    - firstCycleBegin
+    - firstCycleEnd
+    - secondCycleBegin
+    - secondCycleEnd
+    + IrrigationPlan()
+    + IrrigationPlan(firstCycleBegin, firstCycleEnd, secondCycleBegin, secondCycleEnd, cipList)
+    + getCreationDate() : LocalDate
+    + getNumberOfDays() : int
+    + getFirstCycleBegin() : LocalTime
+    + setFirstCycleBegin(firstCycleBegin)
+    + getFirstCycleEnd() : LocalTime
+    + setFirstCycleEnd(firstCycleEnd)
+    + getSecondCycleBegin() : LocalTime
+    + setSecondCycleBegin(secondCycleBegin)
+    + getSecondCycleEnd() : LocalTime
+    + setSecondCycleEnd(secondCycleEnd)
+    + getCipList() : List<CurrentlyIrrigatedPlot>
+    + setCipList(cipList)
+    + equals(object) : boolean
+    + hashCode() : int
+}
+
+class IrrigationPlanMapper {
+    + mapToDTO(irrigationPlan) : IrrigationPlanDTO
+    + mapToEntity(irrigationPlanDTO) : IrrigationPlan
+}
+
+class IrrigationPlanDTO {
+        - creationDate
+        - numberOfDays
+        - firstCycleBegin
+        - firstCycleEnd
+        - secondCycleBegin
+        - secondCycleEnd
+        + IrrigationPlanDTO(firstCycleBegin, firstCycleEnd, secondCycleBegin, secondCycleEnd, cipList)
+        + getCreationDate() : LocalDate
+        + setCreationDate(creationDate)
+        + getNumberOfDays() : int
+        + setNumberOfDays(numberOfDays)
+        + getFirstCycleBegin() : LocalTime
+        + setFirstCycleBegin(firstCycleBegin)
+        + getFirstCycleEnd() : LocalTime
+        + setFirstCycleEnd(firstCycleEnd)
+        + getSecondCycleBegin() : LocalTime
+        + setSecondCycleBegin(secondCycleBegin)
+        + getSecondCycleEnd() : LocalTime
+        + setSecondCycleEnd(secondCycleEnd)
+        + getCipDTOList() : List<CurrentlyIrrigatedPlotDTO>
+        + setCipDTOList(cipDTOList)
+}
+
+class CurrentlyIrrigatedPlot {
+    - plot
+    - durationInMinutes
+    - regularity
+    - minutesLeft
+    + CurrentlyIrrigatedPlot(plot, durationInMinutes, regularity, minutesLeft)
+    + CurrentlyIrrigatedPlot(plot, minutesLeft)
+    + getPlot() : Plot
+    + setPlot(plot)
+    + getDurationInMinutes() : int
+    + setDurationInMinutes(durationInMinutes)
+    + getRegularity() : int
+    + setRegularity(regularity)
+    + getMinutesLeft() : int
+    + setMinutesLeft(minutesLeft)
+    + equals(object) : boolean
+}
+
+class CurrentlyIrrigatedPlotDTO {
+    - plotDTO
+    - minutesLeft
+    + CurrentlyIrrigatedPlotDTO(plotDTO, minutesLeft)
+    + getPlotDTO() : PlotDTO
+    + setPlotDTO(plotDTO)
+    + getMinutesLeft() : int
+    + setMinutesLeft(minutesLeft)
+    + toString() : String
+}
+
+class CurrentlyIrrigatedPlotMapper {
+    + mapToDTO(currentlyIrrigatedPlot) : CurrentlyIrrigatedPlotDTO
+    + mapToEntity(currentlyIrrigatedPlotDTO) : CurrentlyIrrigatedPlot
+    + toDTOList(cipList) : List<CurrentlyIrrigatedPlotDTO>
+    + toEntityList(cipDTOList) : List<CurrentlyIrrigatedPlot>
+}
+
+class Plot {
+    - designation
+    - area
+    + Plot(designation, area, cropList)
+    + Plot(designation)
+    + Plot()
+    + getDesignation() : String
+    + setDesignation(designation)
+    + getArea() : double
+    + setArea(area)
+    + getCropList() : List<Crop>
+    + setCropList(cropList)
+    + equals(object) : boolean
+    + hashCode() : int
+}
+
+class PlotDTO {
+    - designation
+    - area
+    + PlotDTO(designation, area, cropDTOList)
+    + PlotDTO(designation)
+    + PlotDTO()
+    + getDesignation() : String
+    + setDesignation(designation)
+    + getArea() : double
+    + setArea(area)
+    + getCropDTOList() : List<CropDTO>
+    + setCropDTOList(cropDTOList)
+}
+
+class PlotMapper {
+    + mapToDTO(plot) : PlotDTO
+    + mapToEntity(plotDTO) : Plot
+    + toDTOList(plotList) : List<PlotDTO>
+    + toEntityList(plotDTOList) : List<Plot>
+}
+
+class Crop {
+    - cropType
+    - cropCycle
+    + Crop(cropType, cropCycle)
+    + Crop()
+    + getCropType() : CropType
+    + setCropType(cropType)
+    + getCropCycle() : CropCycle
+    + setCropCycle(cropCycle)
+    + equals(object) : boolean
+    + hashCode() : int
+}
+
+class CropDTO {
+    - cropType
+    - cropCycle
+    + CropDTO(cropType, cropCycle)
+    + getCropType() : CropType
+    + setCropType(cropType)
+    + getCropCycle() : CropCycle
+    + setCropCycle(cropCycle)
+}
+
+class CropMapper {
+    + mapToDTO(crop) : CropDTO
+    + mapToEntity(cropDTO) : Crop
+    + toDTOList(cropList) : List<CropDTO>
+    + toEntityList(cropDTOList) : List<Crop>
+}
+
+class FileCreator {
+    + createFile(filePath, fileName, content) : boolean
+}
+
+class FileReader {
+    + readIrrigationPlan(filePath, fileName) : List<String>
+}
+
+class Utils {
+    + readLineFromConsole(String title) : String
+    + readIntegerFromConsole(String title) : int
+    + readDateFromConsole(String title) : LocalDate
+    + readTimeFromConsole(String title) : LocalTime
+    + parsedTimeHelper(String timeString) : String
+}
+
+IrrigationSystemUI .> IrrigationSystemController
+
+IrrigationSystemController .-> IrrigationPlan
+IrrigationSystemController .--> IrrigationPlanDTO
+IrrigationSystemController .---> IrrigationPlanMapper
+
+IrrigationSystemController .-> CurrentlyIrrigatedPlot
+IrrigationSystemController .--> CurrentlyIrrigatedPlotDTO
+IrrigationSystemController .---> CurrentlyIrrigatedPlotMapper
+
+IrrigationSystemController .-> Plot
+IrrigationSystemController .--> PlotDTO
+IrrigationSystemController .---> PlotMapper
+
+IrrigationSystemController .-> Crop
+IrrigationSystemController .--> CropDTO
+IrrigationSystemController .---> CropMapper
+
+IrrigationSystemController .-> IrrigationSystem
+
+IrrigationSystemController .> FileReader
+
+IrrigationSystem --> Utils
+IrrigationSystem --> FileCreator
+
+IrrigationPlan "1" -- "1" IrrigationPlanMapper : mapped by <
+IrrigationPlanMapper "1" -- "1" IrrigationPlanDTO : maps >
+
+CurrentlyIrrigatedPlot "1" -- "1" CurrentlyIrrigatedPlotMapper : mapped by <
+CurrentlyIrrigatedPlotMapper "1" -- "1" CurrentlyIrrigatedPlotDTO : maps >
+
+Plot "1" -- "1" PlotMapper : mapped by <
+PlotMapper "1" -- "1" PlotDTO : maps >
+
+Crop "1" -- "1" CropMapper : mapped by <
+CropMapper "1" -- "1" CropDTO : maps >
+
+CurrentlyIrrigatedPlot "1" o-- "1" Plot : is >
+
+Plot "1" o-- "*" Crop : has >
+
+CurrentlyIrrigatedPlotDTO "1" o-- "1" PlotDTO : is >
+
+PlotDTO "1" o-- "*" CropDTO : has >
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title USLP10 - System Sequence Diagram (SSD)
+
+autonumber
+
+actor "Product Owner" as ProductOwner
+participant ":System" as System
+
+activate ProductOwner
+
+    ProductOwner -> System: asks to see the irrigation system controller simulation.
+    activate System
+
+        System --> ProductOwner: asks the user to import a file with the irrigation plan or imports a file by default (irrigationPlanFor30Days.txt).
+    deactivate System
+
+    ProductOwner -> System: chooses the desired option related to the file with the irrigation plan data.
+    activate System
+
+        System --> ProductOwner: asks the user to input a date/time slot to check if the system is on or asks if the user wants to check the system's current status.
+    deactivate System
+
+    ProductOwner -> System: chooses the desired option related to the date/time slot.
+    activate System
+
+        alt System is on
+            System --> ProductOwner: shows the system's status for the chosen date/time slot and the sector that is currently being irrigated, as well as its specific details.
+        else System is off
+            autonumber 6
+            System --> ProductOwner: shows the system's status for the chosen date/time slot and the next sector to be irrigated (if any), as well as its specific details.
+        end
+    deactivate System
+
+deactivate ProductOwner
+
+@enduml

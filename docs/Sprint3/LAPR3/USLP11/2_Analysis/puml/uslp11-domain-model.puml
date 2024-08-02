@@ -1,0 +1,73 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype polyline
+
+hide circle
+hide methods
+
+title USLP11 - Domain Model
+
+class Irrigation {
+    - id : Integer
+    - operationDate : LocalDate
+    - durationInMinutes : Integer
+    - startTime : LocalTime
+    - endTime : LocalTime
+    - regularity : String
+}
+
+class Fertigation {
+    - mixRecurrence : Integer
+}
+
+class Recipe {
+    - id : Integer
+}
+
+class ProductionFactor {
+    - productionFactorId : Integer
+    - designation : String
+}
+
+class IrrigationSystem {
+}
+
+class IrrigationPlan {
+    - {static} creationDate : LocalDate
+    - {static} numberOfDays : int
+}
+
+class IrrigationPlanOfDay {
+    - cycleBegins : List<LocalTime>
+    - cycleEnds : List<LocalTime>
+}
+
+class Sector {
+    - id : Integer
+    - designation : String
+}
+
+class IrrigationMonitor {
+    - endTimes : Iterator<LocalTime>
+    - scheduler : ScheduledExecutorService
+    - lastExecutionDateTime : LocalDateTime
+}
+
+class Fieldbook {
+}
+
+IrrigationMonitor "1" -- "1" IrrigationSystem : monitors >
+IrrigationSystem "1" -- "1" IrrigationPlan : follows >
+IrrigationPlan "1" -- "*" IrrigationPlanOfDay : consists of >
+IrrigationPlanOfDay "1" -- "*" Irrigation : has >
+Irrigation "1" - "1" Fertigation : can be >
+Fertigation "1" -- "1" Recipe : uses >
+Recipe "1" -- "*" ProductionFactor : has >
+Irrigation "*" -- "1" Sector : of a >
+Fieldbook "1" -- "*" Irrigation : registers >
+
+@enduml

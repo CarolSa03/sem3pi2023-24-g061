@@ -1,0 +1,119 @@
+@startuml
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+title USLP03 - Class Diagram
+
+class WriteInFieldbookUI {
+    - controller : WriteInFieldbookController
+    + WriteInFieldbookUI()
+    + run() : void
+}
+
+class WriteInFieldbookController {
+    + writeInFieldbook(irrigation : Irrigation) : boolean
+    + getFinishedOperation() : Irrigation
+}
+
+class IrrigationRepository {
+    + IrrigationRepository()
+    + getIrrigations() : List<Irrigation>
+    + irrigationRegister(irrigationId : Integer, fieldbookId : Integer, operationDate : LocalDate, sectorDesignation : String, durationInMinutes : Integer, startTime : LocalTime, endTime : LocalTime) : void
+    + resultSetToList(resultSet : ResultSet) : List<Irrigation>
+}
+
+class Irrigation {
+    - id : Integer
+    - {static} fieldbookId : Integer
+    - sector : Sector
+    - operationDate : LocalDate
+    - durationInMinutes : Integer
+    - startTime : LocalTime
+    - endTime : LocalTime
+    - regularity : String
+    + Irrigation(id : Integer, operationDate : LocalDate, sectorDesignation : String, durationInMinutes : Integer, startTime : LocalTime, endTime : LocalTime)
+    + Irrigation(sector : Sector, operationDate : LocalDate, durationInMinutes : Integer, startTime : LocalTime, endTime : LocalTime)
+    + Irrigation(sector : Sector, operationDate : LocalDate, durationInMinutes : Integer, startTime : LocalTime, endTime : LocalTime, regularity : String)
+    + getId() : Integer
+    + getFieldbookId() : Integer
+    + getSector() : Sector
+    + getOperationDate() : LocalDate
+    + getDurationInMinutes() : Integer
+    + getStartTime() : LocalTime
+    + getEndTime() : LocalTime
+    + getRegularity() : String
+    + setId(id : Integer) : void
+    + setSector(sector : Sector) : void
+    + setOperationDate(operationDate : LocalDate) : void
+    + setDurationInMinutes(durationInMinutes : Integer) : void
+    + setStartTime(startTime : LocalTime) : void
+    + setEndTime(endTime : LocalTime) : void
+    + setRegularity(regularity : String) : void
+    + toString() : String
+}
+
+class Fieldbook {
+    + {static} writeInFieldbook(irrigation : Irrigation) : boolean
+    + {static} getFieldbookFileWithPath() : String
+}
+
+class IrrigationSystem {
+    - irrigationPlan : IrrigationPlan
+    + IrrigationSystem()
+    + createIrrigationPlan(fileContent : List<String>) : IrrigationPlan
+    + isOn(date : LocalDate, time : LocalTime) : boolean
+    - checkIfOnInDay (date : LocalDate, regularity : String) : boolean
+    + getCurrentlyIrrigatedSector(date : LocalDate, time : LocalTime) : CurrentlyIrrigatedSector
+    + endOfOperation() : boolean
+    + createFile() : boolean
+    - addContentToIrrigationPlanFile(content : List<String>, date : LocalDate) : boolean
+    + getFinishedOperation() : Irrigation
+}
+
+class IrrigationPlan {
+    - {static} creationDate : LocalDate
+    - {static} numberOfDays : int
+    - irrigationsPerDay : Map<LocalDate, IrrigationPlanOfDay>
+    + IrrigationPlan(irrigationsPerDay : Map<LocalDate, IrrigationPlanOfDay>)
+    + IrrigationPlan()
+    + getCreationDate() : LocalDate
+    + getNumberOfDays() : int
+    + getIrrigationsPerDay() : Map<LocalDate, IrrigationPlanOfDay>
+    + setIrrigationsPerDay(irrigationsPerDay : Map<LocalDate, IrrigationPlanOfDay>) : void
+}
+
+class IrrigationPlanOfDay {
+    - firstCycleBegin : LocalTime
+    - firstCycleEnd : LocalTime
+    - secondCycleBegin : LocalTime
+    - secondCycleEnd : LocalTime
+    - irrigationList : List<Irrigation>
+    + IrrigationPlanOfDay(firstCycleBegin : LocalTime, firstCycleEnd : LocalTime, secondCycleBegin : LocalTime, secondCycleEnd : LocalTime, irrigationList : List<Irrigation>)
+    + getFirstCycleBegin() : LocalTime
+    + getFirstCycleEnd() : LocalTime
+    + getSecondCycleBegin() : LocalTime
+    + getSecondCycleEnd() : LocalTime
+    + getIrrigationList() : List<Irrigation>
+    + setFirstCycleBegin(firstCycleBegin : LocalTime) : void
+    + setFirstCycleEnd(firstCycleEnd : LocalTime) : void
+    + setSecondCycleBegin(secondCycleBegin : LocalTime) : void
+    + setSecondCycleEnd(secondCycleEnd : LocalTime) : void
+    + setIrrigationList(irrigationList : List<Irrigation>) : void
+    + equals(o : Object) : boolean
+    + hashCode() : int
+}
+
+WriteInFieldbookUI -> WriteInFieldbookController
+WriteInFieldbookController --> IrrigationRepository : registers in >
+WriteInFieldbookController --> Fieldbook : writes in >
+WriteInFieldbookController --> IrrigationSystem : uses >
+IrrigationSystem .-> IrrigationPlan : creates >
+IrrigationPlan .-> IrrigationPlanOfDay : consists of >
+IrrigationSystem .-> Irrigation : gets a >
+IrrigationPlan .-> Irrigation : of >
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+
+skinparam classAttributeIconSize 0
+
+left to right direction
+
+class OperationSowingRegisterUI{
+-OperationsListUI operationsListUI
+-PlotsListUI plotsListUI
+-UnitsListUI unitsListUI
+-CropsInPlotListUI cropsInPlotListUI
+-OperationSowingRegisterController controller
+OperationSowingRegisterUI()
+run()
+}
+
+class OperationSowingRegisterController{
+-OperationSowingRepository operationSowingRepository
+OperationSowingRepository getOperationSowingRepository()
+operationSowingRegister(Integer operationId, LocalDate operationDate, Integer plotId, Float quantityValue, Float areaValue, Integer quantityUnitId, Integer areaUnitId, Integer cropId)
+}
+
+class OperationSowingRepository{
+OperationSowingRepository()
+operationSowingRegister(Integer operationId, LocalDate operationDate, Integer plotId, Float quantityValue, Float areaValue, Integer quantityUnitId, Integer areaUnitId, Integer cropId)
+}
+
+class OperationSowingDTO{
+-LocalDate operationDate
+-String unit
+-Double amount
+-String plantDesignation
+-String plotDesignation
+OperationSowingDTO(LocalDate operationDate, Double amount, String unit, String plotDesignation,String plantDesignation)
+}
+class Repositories{
+-PlotRepository plotRepository
+-UnitRepository unitRepository
+-OperationSowingRepository operationSowingRepository
+-CropRepository cropRepository
+Repositories()
+}
+OperationSowingRegisterUI ..> OperationSowingRegisterController
+OperationSowingRegisterController ..> Repositories
+Repositories --> OperationSowingRepository : has >
+OperationSowingRegisterController ..> OperationSowingRepository
+OperationSowingRepository ..> OperationSowingDTO
+
+
+@enduml
