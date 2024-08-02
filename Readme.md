@@ -22,3 +22,7 @@ To run the project, you need to run the .jar file by performing the following in
 
 *Run the .jar file by typing the following command:*
 ```java -jar sem3pi2023_24_g061.jar```
+
+## PROJECT ORGANISATION ##
+
+The project is divided in folders with the subject name due to this being a project that involved all projects.
